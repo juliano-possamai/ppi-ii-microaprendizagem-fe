@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import trailsApi from '@/api/trailsApi';
 import { LearningTrailType, SectionType } from '@/types/trailTypes';
@@ -20,13 +20,14 @@ export default function Trails() {
 		}
 	}
 
-	useEffect(() => {
-		//TODO loading
+	useFocusEffect(() => {
+		// 	//TODO loading
 		fetchTrails();
-	}, []);
+	})
 
 	return (
-		<View className="flex-1 pt-16 p-4">
+		<View className="flex-1 pt-16 p-5">
+			<Text className="text-2xl font-bold mb-4">Minhas trilhas</Text>
 			<FlatList
 				data={trails}
 				keyExtractor={(item) => item._id}

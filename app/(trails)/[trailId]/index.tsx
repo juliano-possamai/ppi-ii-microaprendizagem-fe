@@ -3,7 +3,7 @@ import SectionContextMenu from "@/components/SectionContextMenu";
 import SectionDetailsModal from "@/components/SectionDetailsModal";
 import { LearningTrailType, SectionType } from "@/types/trailTypes";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
@@ -23,7 +23,6 @@ export default function TrailDetails() {
 	const fetchTrailDetails = async () => {
 		try {
 			const data = await trailsApi.getById(trailId);
-			// data.sections = data.sections.concat(data.sections, data.sections, data.sections)
 			setTrailDetails(data);
 		} catch (error) {
 			console.error(error);

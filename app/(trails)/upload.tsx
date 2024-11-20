@@ -30,8 +30,8 @@ export default function Upload() {
 	};
 
 	return (
-		//TODO adicionar cabeçalho
 		<View className="flex-1 pt-16 p-5 gap-4">
+			<Text className="text-2xl font-bold mb-4">Nova trilha</Text>
 			<TextInput
 				className="w-full p-4 border border-gray-300 rounded-lg"
 				placeholder="Content Title"
