@@ -62,7 +62,7 @@ export default function Upload() {
 			>
 				<Ionicons name="document-attach-outline" size={24} color="black" />
 				<Text className="text-center ml-2">
-					{selectedFile ? selectedFile : 'Select PDF File'}
+					{selectedFile ? selectedFile : 'Selecione o arquivo PDF'}
 				</Text>
 			</TouchableOpacity>
 
@@ -71,7 +71,7 @@ export default function Upload() {
 				onPress={handleUpload}
 			>
 				<Text className="text-white text-center font-semibold ml-2">
-					Create Learning Trail
+					Criar Trilha de Conhecimento
 				</Text>
 			</TouchableOpacity>
 		</View>

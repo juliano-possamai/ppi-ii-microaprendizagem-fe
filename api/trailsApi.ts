@@ -24,7 +24,7 @@ class TrailsApi {
 		return response.data;
 	}
 
-	async markSectionAsRead(id: string, sectionId: string, data: Partial<SectionType>): Promise<SectionType> {
+	async updateSectionReadStatus(id: string, sectionId: string, data: Partial<SectionType>): Promise<SectionType> {
 		const response = await api.patch(`/learning-trails/${id}/sections/${sectionId}`, data);
 		return response.data;
 	}
