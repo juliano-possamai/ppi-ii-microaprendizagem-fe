@@ -7,6 +7,7 @@ import trailsApi from '@/api/trailsApi';
 import { AxiosError } from 'axios';
 import { FileInterface } from '@/types/trailTypes';
 import { notify } from 'react-native-notificated';
+import { useLoading } from '@/contexts/loading';
 
 interface ErrorDetailInterface {
 	element: string;
@@ -40,6 +41,7 @@ const defaultFormState: FormState = {
 export default function Upload() {
 	const [errors, setErrors] = useState<ErrorInterface>(defaultErrors);
 	const [formState, setFormState] = useState<FormState>(defaultFormState);
+	const { setLoading } = useLoading();
 
 	const clearForm = () => {
 		setFormState(defaultFormState);
@@ -69,7 +71,7 @@ export default function Upload() {
 
 	const handleUpload = async () => {
 		try {
-			//TODO loading
+			setLoading(true);
 			await trailsApi.create(formState);
 
 			notify('success', {
@@ -88,6 +90,7 @@ export default function Upload() {
 
 			setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 		}
+		setLoading(false);
 	};
 
 	const getFieldError = (fieldName: string) => {

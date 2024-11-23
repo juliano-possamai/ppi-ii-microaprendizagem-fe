@@ -30,17 +30,17 @@ const SectionDetailsModal: React.FC<ItemModalProps> = ({ section: item, onClose,
 						{'\t'}{item.content}
 					</Text>
 				</ScrollView>
-				<View className="flex-row justify-between mt-4">
+				<View className="flex-row justify-between mt-4 gap-4">
 					<TouchableOpacity
 						onPress={goToPreviousSection}
-						className="flex-1 p-4 flex-row items-center justify-center rounded-lg mr-2 border-2 border-gray-400"
+						className="flex-1 p-4 flex-row items-center justify-center rounded-lg border-2 border-gray-400"
 					>
 						<Ionicons name="arrow-back-outline" size={24} color="#4B5563" />
 						<Text className="ml-2 text-base text-gray-700">Voltar</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						onPress={() => goToNextSection()}
-						className="flex-1 p-4 rounded-lg flex-row items-center justify-center ml-2"
+						className="flex-1 p-4 flex-row items-center justify-center rounded-lg border-2 border-gray-400"
 					>
 						<Text className="text-base text-gray-700">Avançar</Text>
 						<Ionicons name="arrow-forward-outline" className="ml-2" size={24} color="#4B5563" />

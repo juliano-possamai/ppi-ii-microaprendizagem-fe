@@ -1,29 +1,34 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import trailsApi from '@/api/trailsApi';
 import { LearningTrailType, SectionType } from '@/types/trailTypes';
+import { useLoading } from '@/contexts/loading';
 
 export default function Trails() {
 	const [trails, setTrails] = useState<LearningTrailType[]>([]);
+	const { setLoading } = useLoading();
 
 	const countReadSections = (sections: SectionType[]) => {
 		return sections.filter((section) => section.read).length;
 	}
 
 	const fetchTrails = async () => {
+		setLoading(true);
 		try {
 			const data = await trailsApi.getAll();
 			setTrails(data);
 		} catch (error) {
 			console.error(error);
 		}
+		setLoading(false);
 	}
 
-	useFocusEffect(() => {
-		// 	//TODO loading
-		fetchTrails();
-	})
+	useFocusEffect(
+		useCallback(() => {
+			fetchTrails();
+		}, [])
+	);
 
 	return (
 		<View className="flex-1 pt-16 p-5">

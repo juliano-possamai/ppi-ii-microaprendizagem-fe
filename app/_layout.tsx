@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaView } from 'react-native';
 import { createNotifications } from 'react-native-notificated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { LoadingProvider } from '@/contexts/loading';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,11 +43,13 @@ export default function RootLayout() {
 	return (
 		<GestureHandlerRootView>
 			<SafeAreaView className="flex-1 bg-gray-50">
-				<NotificationsProvider />
 				<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-					<Stack>
-						<Stack.Screen name="(trails)" options={{ headerShown: false }} />
-					</Stack>
+					<NotificationsProvider />
+					<LoadingProvider>
+						<Stack>
+							<Stack.Screen name="(trails)" options={{ headerShown: false }} />
+						</Stack>
+					</LoadingProvider>
 				</ThemeProvider>
 			</SafeAreaView>
 		</GestureHandlerRootView>

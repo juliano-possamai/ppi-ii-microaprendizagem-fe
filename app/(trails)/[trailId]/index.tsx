@@ -1,17 +1,17 @@
 import trailsApi from "@/api/trailsApi";
 import SectionContextMenu from "@/components/SectionContextMenu";
 import SectionDetailsModal from "@/components/SectionDetailsModal";
+import { useLoading } from "@/contexts/loading";
 import { LearningTrailType, SectionType } from "@/types/trailTypes";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { notify } from "react-native-notificated";
 
 export default function TrailDetails() {
-	const navigation = useNavigation();
-
 	const { trailId } = useLocalSearchParams<{ trailId: string }>();
+	const { setLoading } = useLoading();
 	const [trailDetails, setTrailDetails] = useState<LearningTrailType>({
 		_id: '',
 		title: '',
@@ -22,12 +22,14 @@ export default function TrailDetails() {
 	const [sectionContextMenu, setSectionContextMenu] = useState<SectionType | null>(null);
 
 	const fetchTrailDetails = async () => {
+		setLoading(true);
 		try {
 			const data = await trailsApi.getById(trailId);
 			setTrailDetails(data);
 		} catch (error) {
 			console.error(error);
 		}
+		setLoading(false);
 	}
 
 	const goToNextSection = async () => {
@@ -61,10 +63,11 @@ export default function TrailDetails() {
 		}
 	}
 
-	useFocusEffect(() => {
-		//TODO loading
-		fetchTrailDetails();
-	})
+	useFocusEffect(
+		useCallback(() => {
+			fetchTrailDetails();
+		}, [])
+	);
 
 	const renderSectionItem = ({ item }: { item: SectionType }) => (
 		<TouchableOpacity
@@ -87,6 +90,7 @@ export default function TrailDetails() {
 				keyExtractor={item => item._id}
 			/>
 
+			{/* TODO estilizar menu de contexto */}
 			{sectionContextMenu &&
 				<SectionContextMenu
 					section={sectionContextMenu}
