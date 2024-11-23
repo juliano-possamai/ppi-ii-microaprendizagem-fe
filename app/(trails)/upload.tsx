@@ -1,14 +1,49 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import trailsApi from '@/api/trailsApi';
+import { AxiosError } from 'axios';
+import { FileInterface } from '@/types/trailTypes';
+
+interface ErrorDetailInterface {
+	element: string;
+	error: string;
+}
+
+interface ErrorInterface {
+	message: string;
+	errors: ErrorDetailInterface[];
+}
+
+interface FormState {
+	title: string;
+	pageStart: number;
+	pageEnd: number;
+	file: FileInterface | null;
+}
+
+const defaultErrors: ErrorInterface = {
+	message: '',
+	errors: []
+}
+
+const defaultFormState: FormState = {
+	title: '',
+	pageStart: 1,
+	pageEnd: 0,
+	file: null
+}
 
 export default function Upload() {
-	const [title, setTitle] = useState('');
-	const [pageStart, setPageStart] = useState('');
-	const [pageEnd, setPageEnd] = useState('');
-	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const [errors, setErrors] = useState<ErrorInterface>(defaultErrors);
+	const [formState, setFormState] = useState<FormState>(defaultFormState);
+
+	const clearForm = () => {
+		setFormState(defaultFormState);
+		setErrors(defaultErrors);
+	}
 
 	const handleFilePick = async () => {
 		try {
@@ -17,43 +52,90 @@ export default function Upload() {
 			});
 
 			if (result.assets && result.assets[0]) {
-				setSelectedFile(result.assets[0].name);
+				setFormState({
+					...formState,
+					file: {
+						uri: result.assets[0].uri,
+						name: result.assets[0].name,
+						type: 'application/pdf',
+					},
+				});
 			}
 		} catch (err) {
-			console.error('Error picking document:', err);
+			console.error('Erro ao selecionar documento', err);
 		}
 	};
 
-	const handleUpload = () => {
-		// TODO: Implement actual upload logic
-		router.back();
+	const handleUpload = async () => {
+		try {
+			await trailsApi.create(formState);
+
+			clearForm();
+			router.back();
+		} catch (error) {
+			if (error instanceof AxiosError && error.response) {
+				return setErrors(error.response.data);
+			}
+
+			setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
+		}
+	};
+
+	const getFieldError = (fieldName: string) => {
+		return errors.errors.find(error => error.element === fieldName)?.error;
+	};
+
+	const handleInputChange = (name: keyof FormState, value: string | number | FileInterface | null) => {
+		setFormState({
+			...formState,
+			[name]: value,
+		});
 	};
 
 	return (
-		<View className="flex-1 pt-16 p-5 gap-4">
+		<ScrollView className="flex-1 pt-16 px-5">
 			<Text className="text-2xl font-bold mb-4">Nova trilha</Text>
-			<TextInput
-				className="w-full p-4 border border-gray-300 rounded-lg"
-				placeholder="Content Title"
-				value={title}
-				onChangeText={setTitle}
-			/>
+			<View className="mb-4">
+				<Text className="text-md font-medium mb-2">Título do Conteúdo</Text>
+				<TextInput
+					className="w-full p-4 border border-gray-300 rounded-lg"
+					placeholder="Título do conteúdo"
+					value={formState.title}
+					onChangeText={(text) => handleInputChange('title', text)}
+				/>
+				{getFieldError('title') && (
+					<Text className="text-red-500 mt-1">{getFieldError('title')}</Text>
+				)}
+			</View>
 
-			<View className="flex-row gap-4 space-x-4 mb-4">
-				<TextInput
-					className="flex-1 p-4 border border-gray-300 rounded-lg"
-					placeholder="Start Page"
-					value={pageStart}
-					onChangeText={setPageStart}
-					keyboardType="number-pad"
-				/>
-				<TextInput
-					className="flex-1 p-4 border border-gray-300 rounded-lg"
-					placeholder="End Page"
-					value={pageEnd}
-					onChangeText={setPageEnd}
-					keyboardType="number-pad"
-				/>
+			<View className="flex-row gap-3 space-x-4 mb-4">
+				<View className="flex-1">
+					<Text className="text-md font-medium mb-2">Página Inicial</Text>
+					<TextInput
+						className="w-full p-4 border border-gray-300 rounded-lg"
+						placeholder="Página inicial"
+						value={formState.pageStart.toString()}
+						onChangeText={(val) => handleInputChange('pageStart', parseInt(val) || 0)}
+						keyboardType="number-pad"
+					/>
+					{getFieldError('pageStart') && (
+						<Text className="text-red-500 mt-1">{getFieldError('pageStart')}</Text>
+					)}
+				</View>
+
+				<View className="flex-1">
+					<Text className="text-md font-medium mb-2">Página Final</Text>
+					<TextInput
+						className="w-full p-4 border border-gray-300 rounded-lg"
+						placeholder="Página final"
+						value={formState.pageEnd.toString()}
+						onChangeText={(val) => handleInputChange('pageEnd', parseInt(val) || 0)}
+						keyboardType="number-pad"
+					/>
+					{getFieldError('pageEnd') && (
+						<Text className="text-red-500 mt-1">{getFieldError('pageEnd')}</Text>
+					)}
+				</View>
 			</View>
 
 			<TouchableOpacity
@@ -62,18 +144,21 @@ export default function Upload() {
 			>
 				<Ionicons name="document-attach-outline" size={24} color="black" />
 				<Text className="text-center ml-2">
-					{selectedFile ? selectedFile : 'Selecione o arquivo PDF'}
+					{formState.file ? formState.file.name : 'Selecione o arquivo PDF'}
 				</Text>
 			</TouchableOpacity>
+			{getFieldError('file') && (
+				<Text className="text-red-500 mb-4">{getFieldError('file')}</Text>
+			)}
 
 			<TouchableOpacity
-				className="w-full bg-blue-600 p-4 rounded-lg flex-row items-center justify-center"
+				className="w-full bg-blue-600 p-4 rounded-lg flex-row items-center justify-center mb-4"
 				onPress={handleUpload}
 			>
 				<Text className="text-white text-center font-semibold ml-2">
 					Criar Trilha de Conhecimento
 				</Text>
 			</TouchableOpacity>
-		</View>
+		</ScrollView>
 	);
 }

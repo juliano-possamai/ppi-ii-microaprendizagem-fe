@@ -5,23 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Attach to Hermes application",
-			"request": "attach",
-			"type": "reactnativedirect",
-			"cwd": "${workspaceFolder}"
-		},
-		{
-			"name": "Debug Android Hermes",
-			"request": "launch",
-			"type": "reactnativedirect",
+			"name": "Attach to packager",
 			"cwd": "${workspaceFolder}",
-			"platform": "android"
-		},
-		{
-			"name": "Attach to packager - Experimental",
-			"request": "attach",
 			"type": "reactnative",
-			"cwd": "${workspaceFolder}"
+			"request": "attach",
+			"sourceMaps": true
 		}
 	]
 }
