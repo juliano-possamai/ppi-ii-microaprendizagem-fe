@@ -4,8 +4,9 @@ import SectionDetailsModal from "@/components/SectionDetailsModal";
 import { LearningTrailType, SectionType } from "@/types/trailTypes";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { notify } from "react-native-notificated";
 
 export default function TrailDetails() {
 	const navigation = useNavigation();
@@ -48,15 +49,22 @@ export default function TrailDetails() {
 	const updateReadStatus = async (sectionId: string, read: boolean) => {
 		try {
 			await trailsApi.updateSectionReadStatus(trailId, sectionId, { read });
+			notify('success', {
+				params: {
+					title: 'Sucesso!',
+					description: 'Status de leitura alterado',
+				},
+			});
 			fetchTrailDetails();
 		} catch (error) {
 			console.error(error);
 		}
 	}
 
-	useEffect(() => {
+	useFocusEffect(() => {
+		//TODO loading
 		fetchTrailDetails();
-	}, []);
+	})
 
 	const renderSectionItem = ({ item }: { item: SectionType }) => (
 		<TouchableOpacity

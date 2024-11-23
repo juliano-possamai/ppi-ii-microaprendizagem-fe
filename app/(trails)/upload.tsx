@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import trailsApi from '@/api/trailsApi';
 import { AxiosError } from 'axios';
 import { FileInterface } from '@/types/trailTypes';
+import { notify } from 'react-native-notificated';
 
 interface ErrorDetailInterface {
 	element: string;
@@ -68,7 +69,15 @@ export default function Upload() {
 
 	const handleUpload = async () => {
 		try {
+			//TODO loading
 			await trailsApi.create(formState);
+
+			notify('success', {
+				params: {
+					title: 'Sucesso!',
+					description: 'Sua nova trilha foi criada',
+				},
+			});
 
 			clearForm();
 			router.back();

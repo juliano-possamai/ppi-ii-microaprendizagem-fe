@@ -8,6 +8,9 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { SafeAreaView } from 'react-native';
+import { createNotifications } from 'react-native-notificated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,6 +19,15 @@ export default function RootLayout() {
 	const [loaded] = useFonts({
 		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
 	});
+
+	const { NotificationsProvider } = createNotifications({
+		isNotch: true,
+		defaultStylesSettings: {
+			globalConfig: {
+				borderType: 'no-border'
+			}
+		}
+	})
 
 	useEffect(() => {
 		if (loaded) {
@@ -28,10 +40,15 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-			<Stack>
-				<Stack.Screen name="(trails)" options={{ headerShown: false }} />
-			</Stack>
-		</ThemeProvider>
+		<GestureHandlerRootView>
+			<SafeAreaView className="flex-1 bg-gray-50">
+				<NotificationsProvider />
+				<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+					<Stack>
+						<Stack.Screen name="(trails)" options={{ headerShown: false }} />
+					</Stack>
+				</ThemeProvider>
+			</SafeAreaView>
+		</GestureHandlerRootView>
 	);
 }
