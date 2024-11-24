@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import trailsApi from '@/api/trailsApi';
 import { AxiosError } from 'axios';
@@ -103,6 +103,10 @@ export default function Upload() {
 			[name]: value,
 		});
 	};
+
+	useFocusEffect(
+		useCallback(() => () => clearForm(), [])
+	);
 
 	return (
 		<ScrollView className="flex-1 pt-12 px-5">

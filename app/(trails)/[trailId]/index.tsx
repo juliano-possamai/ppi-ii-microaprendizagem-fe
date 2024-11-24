@@ -9,15 +9,17 @@ import { useCallback, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { notify } from "react-native-notificated";
 
+const defaultTrailDetails: LearningTrailType = {
+	_id: '',
+	title: '',
+	sections: []
+}
+
 export default function TrailDetails() {
 	const { trailId } = useLocalSearchParams<{ trailId: string }>();
 	const { setLoading } = useLoading();
-	const [trailDetails, setTrailDetails] = useState<LearningTrailType>({
-		_id: '',
-		title: '',
-		sections: [],
-	});
 
+	const [trailDetails, setTrailDetails] = useState<LearningTrailType>(defaultTrailDetails);
 	const [sectionDetails, setSectionDetails] = useState<SectionType | null>(null);
 	const [sectionContextMenu, setSectionContextMenu] = useState<SectionType | null>(null);
 
@@ -66,6 +68,12 @@ export default function TrailDetails() {
 	useFocusEffect(
 		useCallback(() => {
 			fetchTrailDetails();
+
+			return () => {
+				setTrailDetails(defaultTrailDetails);
+				setSectionDetails(null);
+				setSectionContextMenu(null);
+			}
 		}, [])
 	);
 
