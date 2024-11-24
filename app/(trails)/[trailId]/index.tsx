@@ -1,6 +1,5 @@
 import trailsApi from "@/api/trailsApi";
 import ContextMenu, { ContextMenuOption } from "@/components/ContextMenu";
-import SectionContextMenu from "@/components/ContextMenu";
 import SectionDetailsModal from "@/components/SectionDetailsModal";
 import { useLoading } from "@/contexts/loading";
 import { LearningTrailType, SectionType } from "@/types/trailTypes";
@@ -17,7 +16,7 @@ const defaultTrailDetails: LearningTrailType = {
 }
 
 export default function TrailDetails() {
-	const { trailId } = useLocalSearchParams<{ trailId: string }>();
+	let { trailId } = useLocalSearchParams<{ trailId: string }>();
 	const { setLoading } = useLoading();
 
 	const [trailDetails, setTrailDetails] = useState<LearningTrailType>(defaultTrailDetails);
@@ -33,7 +32,7 @@ export default function TrailDetails() {
 			console.error(error);
 		}
 		setLoading(false);
-	}
+	};
 
 	const goToNextSection = async () => {
 		if (sectionDetails && !sectionDetails.read) {
@@ -95,7 +94,7 @@ export default function TrailDetails() {
 				setSectionDetails(null);
 				setSectionContextMenu(null);
 			}
-		}, [])
+		}, [trailId])
 	);
 
 	const renderSectionItem = ({ item }: { item: SectionType }) => (
