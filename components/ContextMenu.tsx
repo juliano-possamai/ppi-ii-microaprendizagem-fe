@@ -1,11 +1,16 @@
 import React, { useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { SectionType } from '@/types/trailTypes';
 import ContextMenuItem from './ContextMenuItem';
+import { Ionicons } from '@expo/vector-icons';
+
+export interface ContextMenuOption {
+	title: string;
+	icon: keyof typeof Ionicons.glyphMap;
+	onPress: () => void;
+}
 
 interface ContextMenuProps {
-	section: SectionType;
-	onChangeReadStatus: () => void;
+	options: ContextMenuOption[];
 	onClose: () => void;
 }
 
@@ -26,35 +31,32 @@ const animatedViewStyle: object = {
 	zIndex: 10
 };
 
-//reabrir menu ao selecionar outro item
-const SectionContextMenu: React.FC<ContextMenuProps> = ({ section, onChangeReadStatus, onClose }) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({ options, onClose }) => {
 	const translateY = useSharedValue(100);
 
 	useEffect(() => {
 		translateY.value = withTiming(100, { duration: 150 }, () => {
 			translateY.value = withTiming(0, { duration: 150 });
 		});
-	}, [section._id]);
+	}, [options]);
 
 	const animatedStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
 
 	return (
 		<Animated.View style={[animatedStyle, animatedViewStyle]} className="bg-white">
-			<ContextMenuItem
-				title="Fechar"
-				icon="close-outline"
-				onPress={onClose}
-			/>
-			<ContextMenuItem
-				title={section.read ? 'Marcar como não lido' : 'Marcar como lido'}
-				icon={section.read ? "eye-outline" : "eye-off-outline"}
-				onPress={() => {
-					onChangeReadStatus();
-					onClose();
-				}}
-			/>
+			{options.map((option, index) => (
+				<ContextMenuItem
+					key={index}
+					title={option.title}
+					icon={option.icon}
+					onPress={() => {
+						option.onPress();
+						onClose();
+					}}
+				/>
+			))}
 		</Animated.View>
 	);
 };
 
-export default SectionContextMenu;
+export default ContextMenu;

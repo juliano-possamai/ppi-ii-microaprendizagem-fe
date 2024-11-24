@@ -1,11 +1,12 @@
 import trailsApi from "@/api/trailsApi";
-import SectionContextMenu from "@/components/SectionContextMenu";
+import ContextMenu, { ContextMenuOption } from "@/components/ContextMenu";
+import SectionContextMenu from "@/components/ContextMenu";
 import SectionDetailsModal from "@/components/SectionDetailsModal";
 import { useLoading } from "@/contexts/loading";
 import { LearningTrailType, SectionType } from "@/types/trailTypes";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { notify } from "react-native-notificated";
 
@@ -65,6 +66,26 @@ export default function TrailDetails() {
 		}
 	}
 
+	const contextMenuOptions = useMemo(() => {
+		const res: ContextMenuOption[] = [
+			{
+				title: 'Fechar',
+				icon: 'close-outline',
+				onPress: () => setSectionContextMenu(null)
+			}
+		];
+
+		if (sectionContextMenu) {
+			res.push({
+				title: sectionContextMenu.read ? 'Marcar como não lido' : 'Marcar como lido',
+				icon: sectionContextMenu.read ? 'eye-outline' : 'eye-off-outline',
+				onPress: () => updateReadStatus(sectionContextMenu._id, !sectionContextMenu.read)
+			});
+		}
+
+		return res;
+	}, [sectionContextMenu]);
+
 	useFocusEffect(
 		useCallback(() => {
 			fetchTrailDetails();
@@ -99,10 +120,9 @@ export default function TrailDetails() {
 			/>
 
 			{sectionContextMenu &&
-				<SectionContextMenu
-					section={sectionContextMenu}
+				<ContextMenu
+					options={contextMenuOptions}
 					onClose={() => setSectionContextMenu(null)}
-					onChangeReadStatus={() => updateReadStatus(sectionContextMenu._id, !sectionContextMenu.read)}
 				/>
 			}
 

@@ -1,17 +1,19 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import trailsApi from '@/api/trailsApi';
 import { LearningTrailType, SectionType } from '@/types/trailTypes';
 import { useLoading } from '@/contexts/loading';
+import ContextMenu, { ContextMenuOption } from '@/components/ContextMenu';
+import { notify } from 'react-native-notificated';
 
 export default function Trails() {
-	const [trails, setTrails] = useState<LearningTrailType[]>([]);
 	const { setLoading } = useLoading();
 
-	const countReadSections = (sections: SectionType[]) => {
-		return sections.filter((section) => section.read).length;
-	}
+	const [trails, setTrails] = useState<LearningTrailType[]>([]);
+	const [trailContextMenu, setTrailContextMenu] = useState<LearningTrailType | null>(null);
+
+	const countReadSections = (sections: SectionType[]) => sections.filter((section) => section.read).length;
 
 	const fetchTrails = async () => {
 		setLoading(true);
@@ -23,6 +25,43 @@ export default function Trails() {
 		}
 		setLoading(false);
 	}
+
+	const deleteTrail = async (trailId: string) => {
+		setLoading(true);
+		try {
+			await trailsApi.delete(trailId);
+			await fetchTrails();
+			notify('success', {
+				params: {
+					title: 'Sucesso!',
+					description: 'Trilha excluída'
+				}
+			});
+		} catch (error) {
+			console.error(error);
+		}
+		setLoading(false);
+	}
+
+	const contextMenuOptions = useMemo(() => {
+		const res: ContextMenuOption[] = [
+			{
+				title: 'Fechar',
+				icon: 'close-outline',
+				onPress: () => setTrailContextMenu(null)
+			}
+		];
+
+		if (trailContextMenu) {
+			res.push({
+				title: 'Excluir',
+				icon: 'trash-outline',
+				onPress: () => deleteTrail(trailContextMenu._id)
+			});
+		}
+
+		return res;
+	}, [trailContextMenu]);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -40,6 +79,7 @@ export default function Trails() {
 					<TouchableOpacity
 						className="bg-gray-50 p-4 rounded-lg mb-3"
 						onPress={() => router.push(`/(trails)/${item._id}`)}
+						onLongPress={() => setTrailContextMenu(item)}
 					>
 						<Text className="text-lg font-semibold mb-2">{item.title}</Text>
 						<Text className="text-gray-600">
@@ -56,6 +96,12 @@ export default function Trails() {
 					</TouchableOpacity>
 				)}
 			/>
+			{trailContextMenu &&
+				<ContextMenu
+					options={contextMenuOptions}
+					onClose={() => setTrailContextMenu(null)}
+				/>
+			}
 		</View>
 	);
 }
