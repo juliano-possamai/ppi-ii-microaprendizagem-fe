@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SectionType } from '@/types/trailTypes';
+import ContextMenuItem from './ContextMenuItem';
 
 interface ContextMenuProps {
 	section: SectionType;
@@ -9,33 +9,51 @@ interface ContextMenuProps {
 	onClose: () => void;
 }
 
+const animatedViewStyle: object = {
+	position: 'absolute',
+	bottom: 0,
+	left: 0,
+	right: 0,
+	borderTopLeftRadius: 10,
+	borderTopRightRadius: 10,
+	shadowOffset: {
+		width: 0,
+		height: 2
+	},
+	shadowOpacity: 0.25,
+	shadowRadius: 3.84,
+	elevation: 5,
+	zIndex: 10
+};
+
+//reabrir menu ao selecionar outro item
 const SectionContextMenu: React.FC<ContextMenuProps> = ({ section, onChangeReadStatus, onClose }) => {
+	const translateY = useSharedValue(100);
+
+	useEffect(() => {
+		translateY.value = withTiming(100, { duration: 150 }, () => {
+			translateY.value = withTiming(0, { duration: 150 });
+		});
+	}, [section._id]);
+
+	const animatedStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
+
 	return (
-		<View className="absolute top-0 rounded-lg border-gray-600 shadow-lg z-10">
-			<TouchableOpacity
-				className="flex-row items-center p-4"
+		<Animated.View style={[animatedStyle, animatedViewStyle]} className="bg-white">
+			<ContextMenuItem
+				title="Fechar"
+				icon="close-outline"
 				onPress={onClose}
-			>
-				<Ionicons name="close-outline" size={24} color="#4B5563" className="mr-2" />
-				<Text className="text-base text-gray-700">Fechar</Text>
-			</TouchableOpacity>
-			<TouchableOpacity
-				className="flex-row items-center p-4"
+			/>
+			<ContextMenuItem
+				title={section.read ? 'Marcar como não lido' : 'Marcar como lido'}
+				icon={section.read ? "eye-outline" : "eye-off-outline"}
 				onPress={() => {
 					onChangeReadStatus();
 					onClose();
 				}}
-			>
-				<Ionicons
-					name={section.read ? "eye-outline" : "eye-off-outline"}
-					size={24} color="#4B5563"
-					className="mr-2"
-				/>
-				<Text className="text-base text-gray-700">
-					{section.read ? 'Marcar como não lido' : 'Marcar como lido'}
-				</Text>
-			</TouchableOpacity>
-		</View>
+			/>
+		</Animated.View>
 	);
 };
 
