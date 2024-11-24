@@ -38,13 +38,10 @@ class TrailsApi {
 		return response.data;
 	}
 
-	//TODO rever retorno
-	async updateSectionReadStatus(id: string, sectionId: string, data: Partial<SectionType>): Promise<SectionType> {
-		const response = await api.patch(`/learning-trails/${id}/sections/${sectionId}`, data);
-		return response.data;
+	async updateSectionReadStatus(id: string, sectionId: string, data: Partial<SectionType>): Promise<void> {
+		await api.patch(`/learning-trails/${id}/sections/${sectionId}`, data);
 	}
 
-	//TODO rever retorno
 	async delete(learningTrailId: string): Promise<void> {
 		await api.delete(`/learning-trails/${learningTrailId}`);
 	}

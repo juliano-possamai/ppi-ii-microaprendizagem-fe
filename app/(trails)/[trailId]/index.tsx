@@ -54,7 +54,7 @@ export default function TrailDetails() {
 			notify('success', {
 				params: {
 					title: 'Sucesso!',
-					description: 'Status de leitura alterado',
+					description: `Seção marcada como ${read ? 'lida' : 'não lida'}`,
 				},
 			});
 			fetchTrailDetails();
@@ -90,7 +90,6 @@ export default function TrailDetails() {
 				keyExtractor={item => item._id}
 			/>
 
-			{/* TODO estilizar menu de contexto */}
 			{sectionContextMenu &&
 				<SectionContextMenu
 					section={sectionContextMenu}

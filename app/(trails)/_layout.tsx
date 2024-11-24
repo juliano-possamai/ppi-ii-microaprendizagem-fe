@@ -11,16 +11,16 @@ export default function TabNavigation() {
 				tabBarStyle: {
 					backgroundColor: 'white',
 					height: 80,
-					paddingBottom: 5,
+					paddingBottom: 5
 				},
 				tabBarItemStyle: {
-					padding: 5,
+					padding: 5
 				},
 				tabBarActiveTintColor: '#3b82f6',
 				tabBarInactiveTintColor: '#94a3b8',
 				tabBarLabelStyle: {
 					fontSize: 12,
-					fontWeight: '600',
+					fontWeight: '600'
 				}
 			}}
 		>

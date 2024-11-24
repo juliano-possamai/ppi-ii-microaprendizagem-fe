@@ -31,7 +31,7 @@ export default function Trails() {
 	);
 
 	return (
-		<View className="flex-1 pt-16 p-5">
+		<View className="flex-1 pt-12 px-5">
 			<Text className="text-2xl font-bold mb-4">Minhas trilhas</Text>
 			<FlatList
 				data={trails}

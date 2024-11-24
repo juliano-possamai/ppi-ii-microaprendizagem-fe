@@ -105,7 +105,7 @@ export default function Upload() {
 	};
 
 	return (
-		<ScrollView className="flex-1 pt-16 px-5">
+		<ScrollView className="flex-1 pt-12 px-5">
 			<Text className="text-2xl font-bold mb-4">Nova trilha</Text>
 			<View className="mb-4">
 				<Text className="text-md font-medium mb-2">Título do Conteúdo</Text>
