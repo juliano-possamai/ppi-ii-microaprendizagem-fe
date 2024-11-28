@@ -1,13 +1,15 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import trailsApi from '@/api/trailsApi';
 import { LearningTrailType, SectionType } from '@/types/trailTypes';
 import { useLoading } from '@/contexts/loading';
 import ContextMenu, { ContextMenuOption } from '@/components/ContextMenu';
 import { notify } from 'react-native-notificated';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Trails() {
+	const router = useRouter();
 	const { setLoading } = useLoading();
 
 	const [trails, setTrails] = useState<LearningTrailType[]>([]);
@@ -72,6 +74,21 @@ export default function Trails() {
 	return (
 		<View className="flex-1 pt-12 px-5">
 			<Text className="text-2xl font-bold mb-4">Minhas trilhas</Text>
+			{!trails.length && (
+				<View className="flex-1 mt-5 items-center justify-center">
+					<Ionicons name="book-outline" size={64} color="#9CA3AF" />
+					<Text className="text-xl font-semibold text-gray-600 mt-4">Nenhuma trilha encontrada</Text>
+					<Text className="text-base text-gray-500 text-center mt-2 max-w-xs">
+						Parece que você ainda não tem trilhas. Comece sua jornada de aprendizado agora!
+					</Text>
+					<TouchableOpacity
+						className="mt-6 bg-blue-600 py-3 px-6 rounded-full"
+						onPress={() => { router.push('/(trails)/upload') }}
+					>
+						<Text className="text-white font-semibold">Adicionar Trilha</Text>
+					</TouchableOpacity>
+				</View>
+			)}
 			<FlatList
 				data={trails}
 				keyExtractor={(item) => item._id}
@@ -96,12 +113,12 @@ export default function Trails() {
 					</TouchableOpacity>
 				)}
 			/>
-			{trailContextMenu &&
+			{trailContextMenu && (
 				<ContextMenu
 					options={contextMenuOptions}
 					onClose={() => setTrailContextMenu(null)}
 				/>
-			}
+			)}
 		</View>
 	);
 }
