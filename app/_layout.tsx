@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native';
 import { createNotifications } from 'react-native-notificated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LoadingProvider } from '@/contexts/loading';
+import { AuthProvider } from '@/contexts/auth';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,9 +47,12 @@ export default function RootLayout() {
 				<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
 					<NotificationsProvider />
 					<LoadingProvider>
-						<Stack>
-							<Stack.Screen name="(trails)" options={{ headerShown: false }} />
-						</Stack>
+						<AuthProvider>
+							<Stack>
+								<Stack.Screen name="(trails)" options={{ headerShown: false }} />
+								<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+							</Stack>
+						</AuthProvider>
 					</LoadingProvider>
 				</ThemeProvider>
 			</SafeAreaView>

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useNavigation } from "expo-router";
-import { Button, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 export default function TrailDetailsLayout() {
 	const navigation = useNavigation();

@@ -1,9 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/contexts/auth';
 
 export default function TabNavigation() {
+	const { isAuthenticated } = useAuth();
+
+	if (!isAuthenticated) {
+		return <Redirect href="/(auth)/login" />;
+	}
+
 	return (
 		<Tabs
 			screenOptions={{
@@ -28,22 +35,22 @@ export default function TabNavigation() {
 				name='index'
 				options={{
 					title: 'Trilhas',
-					tabBarIcon: ({ color, size }) => (
-						<View className={`rounded-full ${color === '#3b82f6' ? 'bg-blue-100' : ''}`}>
+					tabBarIcon: ({ focused, color, size }) => (
+						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
 							<Ionicons name='book-outline' size={size} color={color} />
 						</View>
-					),
+					)
 				}}
 			/>
 			<Tabs.Screen
 				name='upload'
 				options={{
 					title: 'Nova trilha',
-					tabBarIcon: ({ color, size }) => (
-						<View className={`rounded-full ${color === '#3b82f6' ? 'bg-blue-100' : ''}`}>
+					tabBarIcon: ({ focused, color, size }) => (
+						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
 							<Ionicons name='add-outline' size={size} color={color} />
 						</View>
-					),
+					)
 				}}
 			/>
 			<Tabs.Screen
@@ -51,6 +58,17 @@ export default function TabNavigation() {
 				options={{
 					href: null,
 					headerShown: false,
+				}}
+			/>
+			<Tabs.Screen
+				name="logout"
+				options={{
+					title: 'Logout',
+					tabBarIcon: ({ focused, color, size }) => (
+						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
+							<Ionicons name='log-out-outline' size={size} color={color} />
+						</View>
+					)
 				}}
 			/>
 		</Tabs>

@@ -1,12 +1,6 @@
 import { CreateTrailRequest, CreateTrailResponse, LearningTrailType, SectionType } from '@/types/trailTypes';
 import api from './api';
 
-/*
-TODO
-tipar objetos de entrada e de saída
-implementar tratamento de erros
-*/
-
 class TrailsApi {
 
 	async getAll(): Promise<LearningTrailType[]> {

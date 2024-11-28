@@ -1,5 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,16 +8,7 @@ import { AxiosError } from 'axios';
 import { FileInterface } from '@/types/trailTypes';
 import { notify } from 'react-native-notificated';
 import { useLoading } from '@/contexts/loading';
-
-interface ErrorDetailInterface {
-	element: string;
-	error: string;
-}
-
-interface ErrorInterface {
-	message: string;
-	errors: ErrorDetailInterface[];
-}
+import { ErrorInterface } from '@/types/commomTypes';
 
 interface FormState {
 	title: string;
@@ -93,8 +84,8 @@ export default function Upload() {
 		setLoading(false);
 	};
 
-	const getFieldError = (fieldName: string) => {
-		return errors.errors.find(error => error.element === fieldName)?.error;
+	const getErrorField = (fieldName: string) => {
+		return errors.errors.find(error => error.field === fieldName)?.error;
 	};
 
 	const handleInputChange = (name: keyof FormState, value: string | number | FileInterface | null) => {
@@ -119,8 +110,8 @@ export default function Upload() {
 					value={formState.title}
 					onChangeText={(text) => handleInputChange('title', text)}
 				/>
-				{getFieldError('title') && (
-					<Text className="text-red-500 mt-1">{getFieldError('title')}</Text>
+				{getErrorField('title') && (
+					<Text className="text-red-500 mt-1">{getErrorField('title')}</Text>
 				)}
 			</View>
 
@@ -134,8 +125,8 @@ export default function Upload() {
 						onChangeText={(val) => handleInputChange('pageStart', parseInt(val) || 0)}
 						keyboardType="number-pad"
 					/>
-					{getFieldError('pageStart') && (
-						<Text className="text-red-500 mt-1">{getFieldError('pageStart')}</Text>
+					{getErrorField('pageStart') && (
+						<Text className="text-red-500 mt-1">{getErrorField('pageStart')}</Text>
 					)}
 				</View>
 
@@ -148,8 +139,8 @@ export default function Upload() {
 						onChangeText={(val) => handleInputChange('pageEnd', parseInt(val) || 0)}
 						keyboardType="number-pad"
 					/>
-					{getFieldError('pageEnd') && (
-						<Text className="text-red-500 mt-1">{getFieldError('pageEnd')}</Text>
+					{getErrorField('pageEnd') && (
+						<Text className="text-red-500 mt-1">{getErrorField('pageEnd')}</Text>
 					)}
 				</View>
 			</View>
@@ -163,8 +154,8 @@ export default function Upload() {
 					{formState.file ? formState.file.name : 'Selecione o arquivo PDF'}
 				</Text>
 			</TouchableOpacity>
-			{getFieldError('file') && (
-				<Text className="text-red-500 mb-4">{getFieldError('file')}</Text>
+			{getErrorField('file') && (
+				<Text className="text-red-500 mb-4">{getErrorField('file')}</Text>
 			)}
 
 			<TouchableOpacity
