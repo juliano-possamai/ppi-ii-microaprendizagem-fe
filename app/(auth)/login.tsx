@@ -2,36 +2,33 @@ import { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/auth';
-import { ErrorInterface } from '@/types/commomTypes';
 import { AxiosError } from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
-
-const defaultErrors: ErrorInterface = {
-	message: '',
-	errors: []
-}
+import { useLoading } from '@/contexts/loading';
+import useErrors from '@/components/useErrors';
 
 export default function LoginPage() {
-	const [errors, setErrors] = useState<ErrorInterface>(defaultErrors);
+	const { setLoading } = useLoading();
+	const { getErrorField, setErrors, clearErrors } = useErrors();
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const { signIn } = useAuth();
 
-	const getErrorField = (field: string) => {
-		return errors.errors.find(error => error.field === field)?.error;
-	};
-
 	const handleLogin = async () => {
 		try {
+			setLoading(true);
+			clearErrors();
 			await signIn({ email, password });
 		} catch (error) {
 			if (error instanceof AxiosError && error.response) {
-				return setErrors(error.response.data);
+				setErrors(error.response.data);
+			} else {
+				setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 			}
-
-			setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 		}
+
+		setLoading(false);
 	};
 
 	return (

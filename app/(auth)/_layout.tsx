@@ -1,13 +1,8 @@
 import { useAuth } from "@/contexts/auth";
-import { Redirect, Slot, Stack, useRouter } from "expo-router";
-import { Text } from "react-native";
+import { Redirect, Stack } from "expo-router";
 
 export default function Layout() {
-	const { isAuthenticated, isLoading } = useAuth();
-
-	if (isLoading) {
-		return <Text>Carregando informações...</Text>;
-	}
+	const { isAuthenticated } = useAuth();
 
 	if (isAuthenticated) {
 		return <Redirect href="/(trails)" />;

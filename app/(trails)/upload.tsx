@@ -8,18 +8,13 @@ import { AxiosError } from 'axios';
 import { FileInterface } from '@/types/trailTypes';
 import { notify } from 'react-native-notificated';
 import { useLoading } from '@/contexts/loading';
-import { ErrorInterface } from '@/types/commomTypes';
+import useErrors from '@/components/useErrors';
 
 interface FormState {
 	title: string;
 	pageStart: number;
 	pageEnd: number;
 	file: FileInterface | null;
-}
-
-const defaultErrors: ErrorInterface = {
-	message: '',
-	errors: []
 }
 
 const defaultFormState: FormState = {
@@ -30,13 +25,13 @@ const defaultFormState: FormState = {
 }
 
 export default function Upload() {
-	const [errors, setErrors] = useState<ErrorInterface>(defaultErrors);
+	const { getErrorField, setErrors, clearErrors } = useErrors();
 	const [formState, setFormState] = useState<FormState>(defaultFormState);
 	const { setLoading } = useLoading();
 
 	const clearForm = () => {
 		setFormState(defaultFormState);
-		setErrors(defaultErrors);
+		clearErrors();
 	}
 
 	const handleFilePick = async () => {
@@ -63,6 +58,7 @@ export default function Upload() {
 	const handleUpload = async () => {
 		try {
 			setLoading(true);
+			clearErrors();
 			await trailsApi.create(formState);
 
 			notify('success', {
@@ -76,16 +72,13 @@ export default function Upload() {
 			router.back();
 		} catch (error) {
 			if (error instanceof AxiosError && error.response) {
-				return setErrors(error.response.data);
+				setErrors(error.response.data);
+			} else {
+				setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 			}
-
-			setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 		}
-		setLoading(false);
-	};
 
-	const getErrorField = (fieldName: string) => {
-		return errors.errors.find(error => error.field === fieldName)?.error;
+		setLoading(false);
 	};
 
 	const handleInputChange = (name: keyof FormState, value: string | number | FileInterface | null) => {

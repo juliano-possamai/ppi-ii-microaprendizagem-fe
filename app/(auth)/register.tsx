@@ -1,40 +1,37 @@
+import useErrors from '@/components/useErrors';
 import { useAuth } from '@/contexts/auth';
-import { ErrorInterface } from '@/types/commomTypes';
+import { useLoading } from '@/contexts/loading';
 import { AxiosError } from 'axios';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const defaultErrors: ErrorInterface = {
-	message: '',
-	errors: []
-}
-
 export default function Register() {
-	const [errors, setErrors] = useState<ErrorInterface>(defaultErrors);
+	const { getErrorField, setErrors, clearErrors } = useErrors();
+	const { setLoading } = useLoading();
+	const { signUp } = useAuth();
 
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-	const { signUp } = useAuth();
-
-	const getErrorField = (field: string) => {
-		return errors.errors.find(error => error.field === field)?.error;
-	};
 
 	const handleRegister = async () => {
 		try {
+			setLoading(true);
+			clearErrors();
 			await signUp({ username, email, password, passwordConfirmation });
 		} catch (error) {
 			if (error instanceof AxiosError && error.response) {
-				return setErrors(error.response.data);
+				setErrors(error.response.data);
+			} else {
+				setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 			}
-
-			setErrors({ message: 'Um erro inesperado aconteceu', errors: [] });
 		}
+
+		setLoading(false);
 	};
 
 	return (
@@ -91,7 +88,6 @@ export default function Register() {
 					<Text className="text-red-500 mt-1">{getErrorField('passwordConfirmation')}</Text>
 				)}
 			</View>
-
 			<TouchableOpacity
 				className="w-full bg-blue-600 p-4 rounded-lg flex-row items-center justify-center mb-4"
 				onPress={handleRegister}
@@ -100,7 +96,6 @@ export default function Register() {
 					Criar Conta
 				</Text>
 			</TouchableOpacity>
-
 			<Link href="/(auth)/login" className="text-blue-600 text-center">
 				Já tem uma conta? Faça login
 			</Link>
