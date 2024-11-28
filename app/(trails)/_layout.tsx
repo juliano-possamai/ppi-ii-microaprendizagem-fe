@@ -4,6 +4,19 @@ import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/auth';
 
+interface TabBarIconProps {
+	focused: boolean;
+	color: string;
+	size: number;
+	name: keyof typeof Ionicons.glyphMap;
+}
+
+const TabBarIcon = ({ focused, color, size, name }: TabBarIconProps) => (
+	<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
+		<Ionicons name={name} size={size} color={color} />
+	</View>
+);
+
 export default function TabNavigation() {
 	const { isAuthenticated } = useAuth();
 
@@ -18,43 +31,45 @@ export default function TabNavigation() {
 				tabBarStyle: {
 					backgroundColor: 'white',
 					height: 80,
-					paddingBottom: 5
-				},
-				tabBarItemStyle: {
-					padding: 5
+					paddingBottom: 8,
+					paddingTop: 8,
+					borderTopWidth: 1,
+					borderTopColor: '#e2e8f0',
+					elevation: 8,
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: -2 },
+					shadowOpacity: 0.1,
+					shadowRadius: 4
 				},
 				tabBarActiveTintColor: '#3b82f6',
 				tabBarInactiveTintColor: '#94a3b8',
 				tabBarLabelStyle: {
 					fontSize: 12,
-					fontWeight: '600'
-				}
+					fontWeight: '600',
+					marginTop: 4
+				},
 			}}
 		>
 			<Tabs.Screen
-				name='index'
+				name="index"
 				options={{
 					title: 'Trilhas',
 					tabBarIcon: ({ focused, color, size }) => (
-						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
-							<Ionicons name='book-outline' size={size} color={color} />
-						</View>
+						<TabBarIcon focused={focused} color={color} size={size} name="book-outline" />
 					)
 				}}
 			/>
 			<Tabs.Screen
-				name='upload'
+				name="upload"
 				options={{
 					title: 'Nova trilha',
 					tabBarIcon: ({ focused, color, size }) => (
-						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
-							<Ionicons name='add-outline' size={size} color={color} />
-						</View>
+						<TabBarIcon focused={focused} color={color} size={size} name="add-outline" />
 					)
 				}}
 			/>
 			<Tabs.Screen
-				name='[trailId]'
+				name="[trailId]"
 				options={{
 					href: null,
 					headerShown: false,
@@ -65,9 +80,7 @@ export default function TabNavigation() {
 				options={{
 					title: 'Logout',
 					tabBarIcon: ({ focused, color, size }) => (
-						<View className={`rounded-full ${focused ? 'bg-blue-100' : ''}`}>
-							<Ionicons name='log-out-outline' size={size} color={color} />
-						</View>
+						<TabBarIcon focused={focused} color={color} size={size} name="log-out-outline" />
 					)
 				}}
 			/>
