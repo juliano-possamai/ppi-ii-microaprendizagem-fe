@@ -54,7 +54,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const signIn = async (data: LoginRequestInterface) => {
 		const response = await authApi.login(data);
-		api.defaults.headers.Authorization = `Bearer ${response.accessToken}`;
 		await storeTokenAndUser({ username: response.user.username }, response.accessToken);
 	};
 
@@ -71,6 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	}
 
 	const storeTokenAndUser = async (user: any, token: string) => {
+		api.defaults.headers.Authorization = `Bearer ${token}`;
 		await SecureStore.setItemAsync(userStoreKey, JSON.stringify(user));
 		await SecureStore.setItemAsync(tokenStoreKey, token);
 		setIsAuthenticated(true);
