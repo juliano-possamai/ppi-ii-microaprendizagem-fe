@@ -50,15 +50,17 @@ export default function TrailDetails() {
 		setSectionDetails(previousItem);
 	}
 
-	const updateReadStatus = async (sectionId: string, read: boolean) => {
+	const updateReadStatus = async (sectionId: string, read: boolean, shouldNotify: boolean = false) => {
 		try {
 			await trailsApi.updateSectionReadStatus(trailId, sectionId, { read });
-			notify('success', {
-				params: {
-					title: 'Sucesso!',
-					description: `Seção marcada como ${read ? 'lida' : 'não lida'}`,
-				},
-			});
+			if (shouldNotify) {
+				notify('success', {
+					params: {
+						title: 'Sucesso!',
+						description: `Seção marcada como ${read ? 'lida' : 'não lida'}`,
+					},
+				});
+			}
 			fetchTrailDetails();
 		} catch (error) {
 			console.error(error);
@@ -78,7 +80,7 @@ export default function TrailDetails() {
 			res.push({
 				title: sectionContextMenu.read ? 'Marcar como não lido' : 'Marcar como lido',
 				icon: sectionContextMenu.read ? 'eye-outline' : 'eye-off-outline',
-				onPress: () => updateReadStatus(sectionContextMenu._id, !sectionContextMenu.read)
+				onPress: () => updateReadStatus(sectionContextMenu._id, !sectionContextMenu.read, true)
 			});
 		}
 
